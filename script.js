@@ -1,57 +1,38 @@
-// Typing Animation
-const roles = ["Web Developer", "Computer Science Student", "AI & Machine Learning Enthusiast", "Tech Innovator in Progress"];
-let i = 0, j = 0, current = "", deleting = false;
-const typingElement = document.querySelector(".typing");
-
-function typeEffect() {
-    if (!deleting && j <= roles[i].length) {
-        current = roles[i].substring(0, j++);
-    } else if (deleting && j >= 0) {
-        current = roles[i].substring(0, j--);
-    }
-
-    typingElement.textContent = current;
-
-    if (j === roles[i].length + 1) deleting = true;
-    if (j === 0 && deleting) {
-        deleting = false;
-        i = (i + 1) % roles.length;
-    }
-
-    setTimeout(typeEffect, deleting ? 70 : 120);
+const roles = ["intelligent systems", "AI-powered experiences", "robotics projects", "ideas into reality"];
+const typing = document.querySelector(".typing");
+let roleIndex = 0, charIndex = 0, deleting = false;
+function typeLoop() {
+  if (!typing) return;
+  const word = roles[roleIndex];
+  typing.textContent = word.slice(0, charIndex);
+  if (!deleting && charIndex < word.length) charIndex++;
+  else if (deleting && charIndex > 0) charIndex--;
+  else if (!deleting) { deleting = true; setTimeout(typeLoop, 1050); return; }
+  else { deleting = false; roleIndex = (roleIndex + 1) % roles.length; }
+  setTimeout(typeLoop, deleting ? 42 : 78);
 }
-typeEffect();
+typeLoop();
 
-
-// Scroll Reveal Animation
-window.addEventListener("scroll", () => {
-    document.querySelectorAll(".reveal").forEach((el) => {
-        const top = el.getBoundingClientRect().top;
-        if (top < window.innerHeight - 100) {
-            el.classList.add("active");
-        }
-    });
+const header = document.querySelector(".site-header");
+const toggle = document.querySelector(".menu-toggle");
+const navLinks = document.querySelector(".nav-links");
+window.addEventListener("scroll", () => header?.classList.toggle("scrolled", window.scrollY > 20), { passive: true });
+toggle?.addEventListener("click", () => {
+  const isOpen = navLinks.classList.toggle("open");
+  toggle.setAttribute("aria-expanded", String(isOpen));
 });
+navLinks?.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
+  navLinks.classList.remove("open");
+  toggle?.setAttribute("aria-expanded", "false");
+}));
 
-// Image Modal Popup
-const modal = document.getElementById("imgModal");
-const modalImg = document.getElementById("modalImage");
-const captionText = document.getElementById("caption");
-
-document.querySelectorAll(".cert-img").forEach(img => {
-    img.onclick = function() {
-        modal.style.display = "block";
-        modalImg.src = this.src;
-        captionText.innerHTML = this.alt;
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("visible");
+      revealObserver.unobserve(entry.target);
     }
-});
-
-// Close modal when clicking X
-document.querySelector(".close").onclick = function() {
-    modal.style.display = "none";
-};
-
-// Close modal when clicking outside the image
-modal.onclick = function(e) {
-    if (e.target === modal) modal.style.display = "none";
-};
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
+document.getElementById("year").textContent = new Date().getFullYear();
